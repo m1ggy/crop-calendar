@@ -24,11 +24,9 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@tensorflow/tfjs-node": "^4.13.0",
     "cors": "^2.8.5",
     "decision-tree": "^0.3.7",
     "express": "^4.18.2",
-    "machinelearn": "^2.1.5",
     "openmeteo": "^1.1.3"
   }
 }
