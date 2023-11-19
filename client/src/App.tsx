@@ -64,19 +64,22 @@ function App() {
     try {
       console.log();
       setProcessing(true);
-      const response = await fetch("http://localhost:3000/api/predict", {
-        body: JSON.stringify({
-          crops: [crop],
-          coords: {
-            lat: location?.geometry?.location?.lat(),
-            lng: location?.geometry?.location?.lng(),
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/predict`,
+        {
+          body: JSON.stringify({
+            crops: [crop],
+            coords: {
+              lat: location?.geometry?.location?.lat(),
+              lng: location?.geometry?.location?.lng(),
+            },
+          }),
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
           },
-        }),
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+        }
+      );
       const jsonresponse = await response.json();
 
       setResult(jsonresponse.rawData);
