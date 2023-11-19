@@ -13,7 +13,7 @@ import {
 } from "@mui/joy";
 import moment from "moment-timezone";
 import { useCallback, useState } from "react";
-import Calendar from "./components/Calendar";
+import Calendar, { CalendarData } from "./components/Calendar";
 import LocationSearch from "./components/LocationSearch";
 
 const CROPS = [
@@ -58,7 +58,7 @@ function App() {
   const [cropConfirmed, setCropConfirmed] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [result, setResult] = useState<any[] | null>(null);
-  const [toDisplay, setToDisplay] = useState<{ date: moment.Moment }[]>([]);
+  const [toDisplay, setToDisplay] = useState<CalendarData[]>([]);
 
   const createCropCalendar = useCallback(async () => {
     try {
@@ -82,7 +82,7 @@ function App() {
       setResult(jsonresponse.rawData);
 
       if (jsonresponse.result && jsonresponse.result.length) {
-        const parsed = jsonresponse.result.map((x) => {
+        const parsed = jsonresponse.result.map((x: any) => {
           const date = moment(x.date)
             .tz("Asia/Manila")
             .set("year", moment().year());

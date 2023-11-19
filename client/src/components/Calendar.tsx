@@ -3,7 +3,7 @@ import moment from "moment";
 import { useMemo, useState } from "react";
 import generateMonthArray from "../util/generateMonth";
 
-type CalendarData = {
+export type CalendarData = {
   date: string;
   prediction: string;
   temperature: number;
