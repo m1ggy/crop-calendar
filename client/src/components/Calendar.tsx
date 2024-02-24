@@ -21,8 +21,6 @@ function Calendar({ data }: CalendarProps) {
   const calendar = useMemo(() => {
     return generateMonthArray(selectedMonth, currentYear);
   }, [selectedMonth, currentYear]);
-
-  console.log({ calendar, selectedMonth });
   return (
     <Stack gap={2} width={"100%"}>
       <Stack

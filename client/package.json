@@ -12,16 +12,20 @@
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
-    "@mui/icons-material": "^5.14.18",
+    "@mui/icons-material": "^5.15.10",
     "@mui/joy": "^5.0.0-beta.15",
-    "@mui/material": "^5.14.18",
+    "@mui/material": "^5.15.10",
+    "@react-spring/web": "^9.7.3",
+    "aos": "^3.0.0-beta.6",
     "decision-tree": "^0.3.7",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.43",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.22.1"
   },
   "devDependencies": {
+    "@types/aos": "^3.0.7",
     "@types/google.maps": "^3.54.8",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",

@@ -105,7 +105,6 @@ function LocationSearch({ onChange, disabled }: LocationSearchProps) {
               },
               (result) => {
                 setLoading(false);
-                console.log("value", result);
                 if (result) onChange(result);
               }
             );
