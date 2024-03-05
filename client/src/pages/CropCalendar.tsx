@@ -14,11 +14,12 @@ import {
 import moment from "moment-timezone";
 import { useCallback, useState } from "react";
 import Calendar, { CalendarData } from "../components/Calendar";
+import Header from "../components/Header";
 import LocationSearch from "../components/LocationSearch";
 
 const CROPS = [
   {
-    label: "Corn",
+    label: "Corn (Zea mays)",
     details: {
       temperature: {
         max: 15,
@@ -30,10 +31,59 @@ const CROPS = [
         min: 2.5,
         scale: "centimeters",
       },
+      daysToHarvest: 63,
     },
   },
   {
-    label: "Rice",
+    label: "Rice (Oryza sativa)",
+    details: {
+      temperature: {
+        max: 35,
+        min: 23,
+        scale: "celsius",
+      },
+      precipitation: {
+        max: 30,
+        min: 50,
+        scale: "centimeters",
+      },
+      daysToHarvest: 180,
+    },
+  },
+  {
+    label: "Banana (Musa spp.)",
+    details: {
+      temperature: {
+        max: 30,
+        min: 26,
+        scale: "celsius",
+      },
+      precipitation: {
+        max: 0.25,
+        min: 0.54,
+        scale: "centimeters",
+      },
+      daysToHarvest: 365,
+    },
+  },
+  {
+    label: "Coconut (Cocos nucifera)",
+    details: {
+      temperature: {
+        max: 34,
+        min: 27,
+        scale: "celsius",
+      },
+      precipitation: {
+        max: 0.63,
+        min: 0.35,
+        scale: "centimeters",
+      },
+      daysToHarvest: 1095,
+    },
+  },
+  {
+    label: "Carrots (Daucus carota)",
     details: {
       temperature: {
         max: 32,
@@ -45,6 +95,7 @@ const CROPS = [
         min: 5,
         scale: "centimeters",
       },
+      daysToHarvest: 70,
     },
   },
 ];
@@ -100,20 +151,21 @@ function CropCalendar() {
   }, [crop, location]);
   return (
     <Container maxWidth={"lg"}>
-      <Stack gap={2} alignItems={"center"} justifyContent={"center"} pt={5}>
-        <Typography level="h1">Crop Calendar</Typography>
+      <Header sx={{ width: "100%", zIndex: 100 }} />
+      <Stack gap={2} alignItems={"center"} justifyContent={"center"}>
         <Stack gap={2} width={"100%"}>
           <Box>
             <LocationSearch
               disabled={locationConfirmed}
               onChange={(value) => {
+                console.log("LOCATION: ", value);
                 setLocation(value);
               }}
             />
           </Box>
           {location ? (
             <Stack gap={1}>
-              <Typography>
+              <Typography textColor={"common.black"}>
                 Selected location is: <b>{location.name}</b>
               </Typography>
               {locationConfirmed ? null : (
@@ -145,7 +197,7 @@ function CropCalendar() {
           ) : null}
           {crop ? (
             <Stack gap={1}>
-              <Typography>
+              <Typography textColor={"common.black"}>
                 Selected crop is: <b>{crop.label}</b>
               </Typography>
               {cropConfirmed ? null : (
@@ -176,18 +228,20 @@ function CropCalendar() {
                 setResult(null);
               }}
             >
-              Reset
+              <Typography textColor={"danger.400"}>Reset</Typography>
             </Button>
           ) : null}
 
           {result ? (
             <Stack gap={1}>
               <Stack direction={"row"} gap={1} alignItems={"center"}>
-                <Typography level="title-lg">Results</Typography>
+                <Typography level="title-lg" textColor={"common.black"}>
+                  Results
+                </Typography>
                 <Tooltip
                   title={
                     <Box maxWidth={"sm"}>
-                      <Typography textColor={"common.white"}>
+                      <Typography textColor={"common.black"}>
                         The data used are based on the{" "}
                         <a
                           href="https://open-meteo.com/en/docs/historical-weather-api"
@@ -210,7 +264,7 @@ function CropCalendar() {
                   </IconButton>
                 </Tooltip>
               </Stack>
-              <Typography>
+              <Typography textColor={"common.black"}>
                 The crop <b>{crop?.label}</b> has a precipitation requirement
                 of: <b>{crop?.details.precipitation.min} cm</b> to{" "}
                 <b>{crop?.details.precipitation.max} cm </b> (Centimeters) and

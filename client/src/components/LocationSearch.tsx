@@ -5,26 +5,9 @@ import {
   FormControl,
   FormLabel,
 } from "@mui/joy";
-import { useEffect, useMemo, useState } from "react";
+import { throttle } from "lodash-es";
+import { useCallback, useMemo, useState } from "react";
 
-type AnyFunction = (...args: any[]) => void;
-
-function debounce<T extends AnyFunction>(
-  func: T,
-  delay: number
-): (...args: Parameters<T>) => void {
-  let timeoutId: ReturnType<typeof setTimeout>;
-
-  return function (this: ThisParameterType<T>, ...args: Parameters<T>): void {
-    const context = this;
-
-    clearTimeout(timeoutId);
-
-    timeoutId = setTimeout(() => {
-      func.apply(context, args);
-    }, delay);
-  };
-}
 type LocationSearchProps = {
   onChange: (value: google.maps.places.PlaceResult) => void;
   disabled?: boolean;
@@ -33,7 +16,7 @@ type LocationSearchProps = {
 function LocationSearch({ onChange, disabled }: LocationSearchProps) {
   const [loading, setLoading] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState("");
-
+  const [intervalId, setIntervalId] = useState<number>(NaN);
   const [result, setResult] = useState<
     { label: string; value: google.maps.places.QueryAutocompletePrediction }[]
   >([]);
@@ -54,25 +37,31 @@ function LocationSearch({ onChange, disabled }: LocationSearchProps) {
     return new google.maps.places.AutocompleteService();
   }, []);
 
-  useEffect(() => {
-    if (searchKeyword) {
+  const searchCallback = useCallback(
+    (value: string) => {
+      setSearchKeyword(value);
       setLoading(true);
-      const debounced = debounce(() => {
-        autocompleteService.getQueryPredictions(
-          { input: searchKeyword },
-          (predictions) => {
-            setLoading(false);
-            if (predictions)
-              setResult(
-                predictions.map((p) => ({ value: p, label: p.description }))
-              );
-          }
-        );
+      const timeoutId = setTimeout(() => {
+        if (value.length)
+          autocompleteService.getQueryPredictions(
+            { input: value },
+            (predictions) => {
+              setLoading(false);
+              if (predictions)
+                setResult(
+                  predictions.map((p) => ({
+                    value: p,
+                    label: p.description,
+                  }))
+                );
+            }
+          );
       }, 1000);
 
-      debounced();
-    }
-  }, [searchKeyword]);
+      setIntervalId(timeoutId);
+    },
+    [autocompleteService]
+  );
 
   return (
     <FormControl>
@@ -87,8 +76,9 @@ function LocationSearch({ onChange, disabled }: LocationSearchProps) {
           },
         }}
         onInputChange={(_, value) => {
-          setSearchKeyword(value);
+          throttle(() => searchCallback(value), 500, { trailing: true })();
         }}
+        onKeyDown={() => clearInterval(intervalId)}
         inputValue={searchKeyword}
         startDecorator={loading ? <CircularProgress size="sm" /> : <Search />}
         placeholder="Type to search for location"

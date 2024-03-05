@@ -36,7 +36,7 @@ function Calendar({ data }: CalendarProps) {
         >
           Prev Month
         </Button>
-        <Typography level="title-md">
+        <Typography level="title-md" textColor={"common.black"}>
           {moment(selectedMonth + 1, ["M"]).format("MMMM")}
         </Typography>
         <Button
@@ -55,7 +55,7 @@ function Calendar({ data }: CalendarProps) {
               textAlign: "center",
             }}
           >
-            <Typography>{x}</Typography>
+            <Typography textColor={"common.black"}>{x}</Typography>
           </Grid>
         ))}
         {calendar.map((x, i) => {
@@ -65,20 +65,27 @@ function Calendar({ data }: CalendarProps) {
               key={i}
               xs={1}
               sx={{
-                height: "8rem",
+                height: "10rem",
                 border: moment.isMoment(x) ? "1px solid gray" : "",
+                p: 1,
               }}
             >
-              <Typography level="title-md">{x?.format("DD")}</Typography>
+              <Typography textColor={"common.black"} level="title-md">
+                {x?.format("DD")}
+              </Typography>
               {match ? (
                 <>
-                  <Typography textAlign={"center"} level="title-sm">
+                  <Typography
+                    textAlign={"center"}
+                    level="title-sm"
+                    textColor={"common.black"}
+                  >
                     {match.prediction}
                   </Typography>
-                  <Typography level="body-sm">
+                  <Typography level="body-sm" textColor={"common.black"}>
                     Temp: {match.temperature.toFixed(2)} °C
                   </Typography>
-                  <Typography level="body-sm">
+                  <Typography level="body-sm" textColor={"common.black"}>
                     Precipitation: {match.precipitation.toFixed(2)} cm
                   </Typography>
                 </>
