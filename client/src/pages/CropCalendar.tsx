@@ -12,7 +12,7 @@ import {
   Typography,
 } from "@mui/joy";
 import moment from "moment-timezone";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Calendar, { CalendarData } from "../components/Calendar";
 import Header from "../components/Header";
 import LocationSearch from "../components/LocationSearch";
@@ -32,6 +32,28 @@ const CROPS = [
         scale: "centimeters",
       },
       daysToHarvest: 63,
+      stages: [
+        {
+          name: "Planting",
+          days: 1,
+        },
+        {
+          name: "Cultivation",
+          days: 13,
+        },
+        {
+          name: "Sidedressing",
+          days: 20,
+        },
+        {
+          name: "Maintenance",
+          days: 20,
+        },
+        {
+          name: "Harvesting",
+          days: 9,
+        },
+      ],
     },
   },
   {
@@ -48,6 +70,20 @@ const CROPS = [
         scale: "centimeters",
       },
       daysToHarvest: 180,
+      stages: [
+        {
+          name: "Sowing",
+          days: 10,
+        },
+        {
+          name: "Growing",
+          days: 160,
+        },
+        {
+          name: "Harvesting",
+          days: 10,
+        },
+      ],
     },
   },
   {
@@ -64,22 +100,28 @@ const CROPS = [
         scale: "centimeters",
       },
       daysToHarvest: 365,
-    },
-  },
-  {
-    label: "Coconut (Cocos nucifera)",
-    details: {
-      temperature: {
-        max: 34,
-        min: 27,
-        scale: "celsius",
-      },
-      precipitation: {
-        max: 0.63,
-        min: 0.35,
-        scale: "centimeters",
-      },
-      daysToHarvest: 1095,
+      stages: [
+        {
+          name: "Planting",
+          days: 1,
+        },
+        {
+          name: "Vegetive Development",
+          days: 180,
+        },
+        {
+          name: "Growing",
+          days: 90,
+        },
+        {
+          name: "Fruiting",
+          days: 90,
+        },
+        {
+          name: "Harvesting",
+          days: 4,
+        },
+      ],
     },
   },
   {
@@ -96,6 +138,20 @@ const CROPS = [
         scale: "centimeters",
       },
       daysToHarvest: 70,
+      stages: [
+        {
+          name: "Planting",
+          days: 1,
+        },
+        {
+          name: "Growing",
+          days: 68,
+        },
+        {
+          name: "Harvesting",
+          days: 1,
+        },
+      ],
     },
   },
 ];
@@ -108,7 +164,9 @@ function CropCalendar() {
   const [crop, setCrop] = useState<CROP_TYPE | null>(null);
   const [cropConfirmed, setCropConfirmed] = useState(false);
   const [processing, setProcessing] = useState(false);
-  const [result, setResult] = useState<[] | null>(null);
+  const [result, setResult] = useState<
+    { date: string; temperature: number; precipitation: number }[] | null
+  >(null);
   const [toDisplay, setToDisplay] = useState<CalendarData[]>([]);
 
   const createCropCalendar = useCallback(async () => {
@@ -149,6 +207,67 @@ function CropCalendar() {
       setProcessing(false);
     }
   }, [crop, location]);
+
+  const prediction = useMemo(() => {
+    if (toDisplay && crop) {
+      let isStartingPointFound = false;
+      let currentCount = 0;
+      const mapped: CalendarData[] = [];
+      for (let i = 0; i < toDisplay.length; i++) {
+        const currentDay = toDisplay[i];
+
+        if (isStartingPointFound) {
+          if (currentCount < crop.details.daysToHarvest) {
+            const newData = { ...currentDay, isValid: true };
+
+            let currentStage: { name: string; days: number } | null = null;
+            for (let k = 0; k < crop.details.stages.length; k++) {
+              const total = crop.details.stages
+                .slice(0, k + 1)
+                .reduce((prev, curr) => prev + curr.days, 0);
+              console.log(
+                "TOTAL STAGES: ",
+                total,
+                i + 1,
+                crop.details.stages.slice(0, k),
+                k
+              );
+              if (total > i) {
+                currentStage = crop.details.stages[k];
+                break;
+              }
+            }
+            console.log({ currentStage });
+            if (currentStage) {
+              newData.stage = currentStage.name;
+            } else {
+              newData.stage = "Suitable";
+            }
+            mapped.push(newData);
+            currentCount += 1;
+          } else mapped.push({ ...currentDay, isValid: false });
+        } else {
+          if (currentDay.temperature <= crop.details.temperature.max) {
+            const newData = { ...currentDay, isValid: true };
+
+            if (crop.details.stages.length) {
+              const startingStage = crop.details.stages[0];
+              newData.stage = startingStage.name;
+            }
+            mapped.push(newData);
+            isStartingPointFound = true;
+            currentCount += 1;
+          } else {
+            mapped.push({ ...currentDay, isValid: false });
+          }
+        }
+      }
+      console.log({ mapped: mapped.filter((p) => p.isValid) });
+      return mapped;
+    }
+    return [];
+  }, [toDisplay, crop]);
+
   return (
     <Container maxWidth={"lg"}>
       <Header sx={{ width: "100%", zIndex: 100 }} />
@@ -226,13 +345,14 @@ function CropCalendar() {
                 setCrop(null);
                 setLocation(null);
                 setResult(null);
+                setToDisplay([]);
               }}
             >
               <Typography textColor={"danger.400"}>Reset</Typography>
             </Button>
           ) : null}
 
-          {result ? (
+          {prediction && prediction.length ? (
             <Stack gap={1}>
               <Stack direction={"row"} gap={1} alignItems={"center"}>
                 <Typography level="title-lg" textColor={"common.black"}>
@@ -271,8 +391,12 @@ function CropCalendar() {
                 temperature requirement of{" "}
                 <b>{crop?.details.temperature.max} °C</b> to{" "}
                 <b>{crop?.details.temperature.min} °C</b> (Degree Celsius)
+                <br />
+                <br />
+                This crop requires <b>{crop?.details.daysToHarvest}</b> days to
+                grow and be ready for harvest.
               </Typography>
-              <Calendar data={toDisplay} />
+              <Calendar data={prediction} />
             </Stack>
           ) : null}
         </Stack>

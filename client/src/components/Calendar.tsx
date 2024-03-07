@@ -9,13 +9,16 @@ export type CalendarData = {
   temperature: number;
   precipitation: number;
   momentDate: moment.Moment;
+  isValid?: boolean;
+  stage?: string;
 };
 type CalendarProps = {
   data: CalendarData[];
 };
 function Calendar({ data }: CalendarProps) {
-  const currentMonth = useMemo(() => moment().month(), [moment]);
-  const currentYear = useMemo(() => moment().year(), [moment]);
+  console.log({ data });
+  const currentMonth = useMemo(() => moment().month(), []);
+  const currentYear = useMemo(() => moment().year(), []);
   const [selectedMonth, setSelectedMonth] = useState<number>(currentMonth);
 
   const calendar = useMemo(() => {
@@ -75,19 +78,29 @@ function Calendar({ data }: CalendarProps) {
               </Typography>
               {match ? (
                 <>
-                  <Typography
+                  {/* <Typography
                     textAlign={"center"}
                     level="title-sm"
                     textColor={"common.black"}
                   >
                     {match.prediction}
-                  </Typography>
+                  </Typography> */}
                   <Typography level="body-sm" textColor={"common.black"}>
                     Temp: {match.temperature.toFixed(2)} °C
                   </Typography>
                   <Typography level="body-sm" textColor={"common.black"}>
                     Precipitation: {match.precipitation.toFixed(2)} cm
                   </Typography>
+                  {match.isValid ? (
+                    <Typography
+                      textColor={"primary.400"}
+                      fontWeight={"bold"}
+                      fontSize={"sm"}
+                      sx={{ textAlign: "center" }}
+                    >
+                      {match.stage}
+                    </Typography>
+                  ) : null}
                 </>
               ) : null}
             </Grid>
