@@ -1,22 +1,27 @@
-import { RouteObject, createBrowserRouter } from "react-router-dom";
-import CropCalendar from "./pages/CropCalendar";
-import Landing from "./pages/Landing";
+import { RouteObject, createBrowserRouter } from 'react-router-dom'
+import CropCalendar from './pages/CropCalendar'
+import Info from './pages/Info'
+import Landing from './pages/Landing'
 
 const routes: RouteObject[] = [
   {
-    path: "/",
+    path: '/',
     children: [
       {
         index: true,
         element: <Landing />,
       },
       {
-        path: "/app",
+        path: '/app',
         element: <CropCalendar />,
+      },
+      {
+        path: '/crops',
+        element: <Info />,
       },
     ],
   },
-];
+]
 
-const router = createBrowserRouter(routes);
-export default router;
+const router = createBrowserRouter(routes)
+export default router

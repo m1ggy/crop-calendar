@@ -1,0 +1,80 @@
+<mxfile host="app.diagrams.net" modified="2024-03-25T01:50:32.779Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" etag="3ML5MVF8Aa9u4GMnl-M3" version="23.1.4" type="device">
+  <diagram name="Page-1" id="10a91c8b-09ff-31b1-d368-03940ed4cc9e">
+    <mxGraphModel dx="1434" dy="772" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" background="none" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="62893188c0fa7362-1" value="Day Precipitation &amp;gt; Min Crop Precipitation" style="whiteSpace=wrap;html=1;rounded=1;shadow=1;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=12;align=center;" parent="1" vertex="1">
+          <mxGeometry x="550" y="50" width="250" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="62893188c0fa7362-2" value="&lt;span&gt;Day Precipication &amp;lt; Max Crop Precipitation&lt;/span&gt;" style="whiteSpace=wrap;html=1;rounded=1;shadow=1;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=12;align=center;" parent="1" vertex="1">
+          <mxGeometry x="410" y="170" width="210" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="62893188c0fa7362-4" value="No" style="rounded=0;html=1;labelBackgroundColor=none;startArrow=none;startFill=0;startSize=5;endArrow=none;endFill=0;endSize=5;jettySize=auto;orthogonalLoop=1;strokeWidth=1;fontFamily=Verdana;fontSize=12;entryX=0.442;entryY=-0.017;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="62893188c0fa7362-1" target="62893188c0fa7362-11" edge="1">
+          <mxGeometry x="-0.3002" y="13" relative="1" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="798.75" y="170" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="62893188c0fa7362-5" value="Yes" style="rounded=0;html=1;labelBackgroundColor=none;startArrow=none;startFill=0;startSize=5;endArrow=none;endFill=0;endSize=5;jettySize=auto;orthogonalLoop=1;strokeWidth=1;fontFamily=Verdana;fontSize=12" parent="1" source="62893188c0fa7362-1" target="62893188c0fa7362-2" edge="1">
+          <mxGeometry x="-0.359" y="-11" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="62893188c0fa7362-8" value="&lt;span&gt;Day Temperature &amp;gt; Min Crop Temperature&lt;/span&gt;" style="whiteSpace=wrap;html=1;rounded=1;shadow=1;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=12;align=center;" parent="1" vertex="1">
+          <mxGeometry x="300" y="280" width="180" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="62893188c0fa7362-11" value="&lt;span&gt;Poor levels of precipitation, move to next day&lt;/span&gt;" style="whiteSpace=wrap;html=1;rounded=0;shadow=1;labelBackgroundColor=none;strokeWidth=2;fontFamily=Verdana;fontSize=12;align=center;" parent="1" vertex="1">
+          <mxGeometry x="760" y="180" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="62893188c0fa7362-12" value="&lt;span&gt;Day Temperation &amp;lt; Max Crop Temperature&lt;/span&gt;" style="whiteSpace=wrap;html=1;rounded=1;shadow=1;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=12;align=center;" parent="1" vertex="1">
+          <mxGeometry x="160" y="395" width="190" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="62893188c0fa7362-14" value="Yes" style="rounded=0;html=1;labelBackgroundColor=none;startArrow=none;startFill=0;startSize=5;endArrow=none;endFill=0;endSize=5;jettySize=auto;orthogonalLoop=1;strokeWidth=1;fontFamily=Verdana;fontSize=12" parent="1" source="62893188c0fa7362-2" target="62893188c0fa7362-8" edge="1">
+          <mxGeometry x="-0.2" y="-14" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="62893188c0fa7362-15" value="No" style="rounded=0;html=1;labelBackgroundColor=none;startArrow=none;startFill=0;startSize=5;endArrow=none;endFill=0;endSize=5;jettySize=auto;orthogonalLoop=1;strokeWidth=1;fontFamily=Verdana;fontSize=12" parent="1" source="62893188c0fa7362-2" target="yEKHbPdvWNO-FO7COsUB-1" edge="1">
+          <mxGeometry x="-0.2" y="14" relative="1" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="576.8181818181818" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="62893188c0fa7362-18" value="Yes" style="rounded=0;html=1;labelBackgroundColor=none;startArrow=none;startFill=0;startSize=5;endArrow=none;endFill=0;endSize=5;jettySize=auto;orthogonalLoop=1;strokeWidth=1;fontFamily=Verdana;fontSize=12" parent="1" source="62893188c0fa7362-8" target="62893188c0fa7362-12" edge="1">
+          <mxGeometry x="-0.2168" y="-14" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="62893188c0fa7362-19" value="No" style="rounded=0;html=1;labelBackgroundColor=none;startArrow=none;startFill=0;startSize=5;endArrow=none;endFill=0;endSize=5;jettySize=auto;orthogonalLoop=1;strokeWidth=1;fontFamily=Verdana;fontSize=12" parent="1" source="62893188c0fa7362-8" target="62893188c0fa7362-23" edge="1">
+          <mxGeometry x="-0.2842" y="12" relative="1" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="508.26086956521726" y="395" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="62893188c0fa7362-20" value="Day is viable for crop" style="whiteSpace=wrap;html=1;rounded=0;shadow=1;labelBackgroundColor=none;strokeWidth=2;fontFamily=Verdana;fontSize=12;align=center;" parent="1" vertex="1">
+          <mxGeometry x="70" y="510" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="62893188c0fa7362-21" value="&lt;span&gt;Too hot, move to next day&lt;/span&gt;" style="whiteSpace=wrap;html=1;rounded=0;shadow=1;labelBackgroundColor=none;strokeWidth=2;fontFamily=Verdana;fontSize=12;align=center;" parent="1" vertex="1">
+          <mxGeometry x="290" y="510" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="62893188c0fa7362-23" value="&lt;span&gt;Too cold, move to next day&lt;/span&gt;" style="whiteSpace=wrap;html=1;rounded=0;shadow=1;labelBackgroundColor=none;strokeWidth=2;fontFamily=Verdana;fontSize=12;align=center;" parent="1" vertex="1">
+          <mxGeometry x="470" y="425" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="62893188c0fa7362-24" value="Yes" style="rounded=0;html=1;labelBackgroundColor=none;startArrow=none;startFill=0;startSize=5;endArrow=none;endFill=0;endSize=5;jettySize=auto;orthogonalLoop=1;strokeWidth=1;fontFamily=Verdana;fontSize=12" parent="1" source="62893188c0fa7362-12" target="62893188c0fa7362-20" edge="1">
+          <mxGeometry x="0.1373" y="-16" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="62893188c0fa7362-25" value="No" style="rounded=0;html=1;labelBackgroundColor=none;startArrow=none;startFill=0;startSize=5;endArrow=none;endFill=0;endSize=5;jettySize=auto;orthogonalLoop=1;strokeWidth=1;fontFamily=Verdana;fontSize=12" parent="1" source="62893188c0fa7362-12" target="62893188c0fa7362-21" edge="1">
+          <mxGeometry x="0.1373" y="16" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="yEKHbPdvWNO-FO7COsUB-1" value="&lt;span&gt;Too much precipitation, move to next day&lt;/span&gt;" style="whiteSpace=wrap;html=1;rounded=0;shadow=1;labelBackgroundColor=none;strokeWidth=2;fontFamily=Verdana;fontSize=12;align=center;" vertex="1" parent="1">
+          <mxGeometry x="560" y="280" width="140" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
