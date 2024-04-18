@@ -19,6 +19,7 @@ function Header({ sx }: HeaderProps) {
         top: 0,
         zIndex: 1,
         width: 'fit-content',
+        backgroundColor: 'white',
         ...sx,
       }}
     >
