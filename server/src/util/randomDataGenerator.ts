@@ -16,7 +16,7 @@ function generateRandomData(
   maxTemperature: number,
   minWater: number,
   maxWater: number,
-  count: number
+  count: number,
 ): RandomData[] {
   const randomDataArray: RandomData[] = [];
 

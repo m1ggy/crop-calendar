@@ -5,6 +5,7 @@ import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useShallow } from 'zustand/react/shallow'
 import useAppStore from '../store/app'
+import sendEmail from '../util/sendEmail'
 const noteSchema = z
   .object({
     title: z.string().min(1).max(255),
@@ -28,8 +29,19 @@ function Notes() {
 
   const onSubmit: SubmitHandler<NoteSchema> = useCallback(
     (data) => {
-      console.log({ data })
       addNote(data)
+      sendEmail({
+        to: 'rebson.pontipedra@lspu.edu.ph',
+        subject: `New Comment from Crop Calendar user!`,
+        html:
+          'Hi there! a new comment was added by a user: \n' +
+          `
+          <br/>
+        <b>${data.title}</b>
+
+        <p>${data.content}</p>
+        `,
+      })
       form.reset()
     },
     [addNote, form]

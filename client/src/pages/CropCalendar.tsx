@@ -38,19 +38,11 @@ const CROPS = [
       stages: [
         {
           name: 'Planting',
-          days: 1,
+          days: 14,
         },
         {
-          name: 'Cultivation',
-          days: 13,
-        },
-        {
-          name: 'Sidedressing',
-          days: 20,
-        },
-        {
-          name: 'Maintenance',
-          days: 20,
+          name: 'Growing',
+          days: 40,
         },
         {
           name: 'Harvesting',
@@ -75,7 +67,7 @@ const CROPS = [
       daysToHarvest: 180,
       stages: [
         {
-          name: 'Sowing',
+          name: 'Planting',
           days: 10,
         },
         {
@@ -106,19 +98,11 @@ const CROPS = [
       stages: [
         {
           name: 'Planting',
-          days: 1,
-        },
-        {
-          name: 'Vegetive Development',
-          days: 180,
+          days: 181,
         },
         {
           name: 'Growing',
-          days: 90,
-        },
-        {
-          name: 'Fruiting',
-          days: 90,
+          days: 180,
         },
         {
           name: 'Harvesting',

@@ -1,22 +1,27 @@
 import cors from "cors";
+import "dotenv/config";
 import express from "express";
 import { fetchWeatherApi } from "openmeteo";
 import CropPredictionModel, {
   Coords,
   Crop,
 } from "./classes/CropPredictionModel";
+import emailRouter from "./routes/email";
 import { range } from "./util/range";
+
 const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
 
-app.get("/api/health-check", (req, res) => {
+app.get("/api/health-check", (_, res) => {
   res.status(200).send("I am healthy!");
 });
 
-app.post<{}, {}, { crops: Crop[]; coords: Coords }>(
+app.use("/api/email", emailRouter);
+
+app.post<object, object, { crops: Crop[]; coords: Coords }>(
   "/api/predict",
   async (req, res) => {
     console.log("PREDICT REQUEST: ", req.body);
@@ -36,7 +41,7 @@ app.post<{}, {}, { crops: Crop[]; coords: Coords }>(
 
       const responses = await fetchWeatherApi(
         "https://archive-api.open-meteo.com/v1/archive",
-        params
+        params,
       );
 
       if (responses && responses.length) {
@@ -52,7 +57,7 @@ app.post<{}, {}, { crops: Crop[]; coords: Coords }>(
             time: range(
               Number(daily.time()),
               Number(daily.timeEnd()),
-              daily.interval()
+              daily.interval(),
             ).map((t) => new Date((t + utcOffsetSeconds) * 1000)),
             temperature: daily.variables(0)!.valuesArray()!,
             precipitation: daily
@@ -81,11 +86,11 @@ app.post<{}, {}, { crops: Crop[]; coords: Coords }>(
         });
       }
     } catch (error) {
-      return res.status(400).json("an error occured");
+      return res.status(400).json({ message: "an error occured" });
     }
-  }
+  },
 );
 
 app.listen(port, () => {
-  return console.log(`Express is listening at http://localhost:${port}`);
+  return console.log(`Server is listening at http://localhost:${port}`);
 });
