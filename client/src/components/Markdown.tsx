@@ -1,19 +1,20 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 interface MarkdownProps {
   children?: string
 }
 
-function flatten(text, child) {
+function flatten(text: string, child: string | ReactNode): string {
   return typeof child === 'string'
     ? text + child
-    : React.Children.toArray(child.props.children).reduce(flatten, text)
+    : //@ts-ignore
+      React.Children.toArray(child.props.children).reduce(flatten, text)
 }
 
-function HeadingRenderer(props) {
+function HeadingRenderer(props: Record<any, any>) {
   const children = React.Children.toArray(props.children)
-  const text = children.reduce(flatten, '')
+  const text = children.reduce(flatten, '').toString()
   const slug = text.toLowerCase().replace(/\W/g, '-')
   return React.createElement(props.node.tagName, { id: slug }, props.children)
 }
