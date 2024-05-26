@@ -11,7 +11,7 @@ type CROP_NAMES =
 interface ProcedureModalProps {
   onClose?: () => void
   title: string
-  crop: CROP_NAMES
+  crop: CROP_NAMES | string
 }
 function ProcedureModal({ onClose, title, crop }: ProcedureModalProps) {
   console.log({ crop })
