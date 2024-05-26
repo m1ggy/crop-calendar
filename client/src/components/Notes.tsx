@@ -1,6 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button, Card, CardContent, Input, Stack, Typography } from '@mui/joy'
-import { useCallback } from 'react'
+import {
+  Button,
+  Card,
+  CardContent,
+  Divider,
+  Input,
+  Stack,
+  Typography,
+} from '@mui/joy'
+import moment from 'moment'
+import { useCallback, useMemo } from 'react'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useShallow } from 'zustand/react/shallow'
@@ -10,26 +19,36 @@ const noteSchema = z
   .object({
     title: z.string().min(1).max(255),
     content: z.string().min(1).max(5000),
+    date: z.string().optional(),
   })
   .required()
 
 type NoteSchema = z.infer<typeof noteSchema>
-function Notes() {
+
+interface NotesProps {
+  date: string
+}
+function Notes({ date }: NotesProps) {
   const { notes, addNote } = useAppStore(
     useShallow((state) => ({ notes: state.notes, addNote: state.addNote }))
   )
+  const currentDate = moment(date)
+  const dateNotes = useMemo(() => {
+    return notes.filter((note) => moment(note.date).isSame(currentDate, 'day'))
+  }, [currentDate, notes])
 
   const form = useForm<NoteSchema>({
     resolver: zodResolver(noteSchema),
     defaultValues: {
       title: '',
       content: '',
+      date: currentDate.toString(),
     },
   })
 
   const onSubmit: SubmitHandler<NoteSchema> = useCallback(
     (data) => {
-      addNote(data)
+      addNote({ ...data })
       sendEmail({
         to: 'rebson.pontipedra@lspu.edu.ph',
         subject: `New Comment from Crop Calendar user!`,
@@ -47,12 +66,9 @@ function Notes() {
     [addNote, form]
   )
   return (
-    <Stack minHeight={'500px'} pb={10}>
-      <Typography textColor={'common.black'} level="h2">
-        Notes
-      </Typography>
-      <Stack py={5} gap={2}>
-        {notes.map((note, i) => (
+    <Stack width={'40vw'}>
+      <Stack py={5} gap={2} maxHeight={'50vh'} overflow={'auto'}>
+        {dateNotes.map((note, i) => (
           <Card key={note.title}>
             <CardContent>
               <Stack>
@@ -68,16 +84,18 @@ function Notes() {
             </CardContent>
           </Card>
         ))}
-        {!notes.length ? (
-          <Typography textColor={'common.black'}>No Notes</Typography>
+        {!dateNotes.length ? (
+          <Typography textColor={'common.black'} textAlign={'center'}>
+            No notes yet.
+          </Typography>
         ) : null}
       </Stack>
-
+      <Divider />
       <Stack
         component={'form'}
-        onSubmit={form.handleSubmit(onSubmit, (error) =>
+        onSubmit={form.handleSubmit(onSubmit, (error) => {
           console.log({ error })
-        )}
+        })}
         gap={2}
       >
         <Typography textColor={'common.black'} level="h4">
@@ -103,7 +121,6 @@ function Notes() {
             </Stack>
           )}
         />
-
         <Button type="submit">Create Note</Button>
       </Stack>
     </Stack>

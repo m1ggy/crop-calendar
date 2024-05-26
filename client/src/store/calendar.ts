@@ -4,6 +4,7 @@ import { CalendarData } from '../components/Calendar'
 export type Note = {
   title: string
   content: string
+  date?: string
 }
 export type Crop = {
   label: string

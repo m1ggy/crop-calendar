@@ -17,7 +17,6 @@ import { useShallow } from 'zustand/react/shallow'
 import Calendar, { CalendarData } from '../components/Calendar'
 import Header from '../components/Header'
 import LocationSearch from '../components/LocationSearch'
-import Notes from '../components/Notes'
 import useAppStore from '../store/app'
 
 const CROPS = [
@@ -302,7 +301,7 @@ function CropCalendar() {
   return (
     <Container maxWidth={'lg'}>
       <Header sx={{ width: '100%', zIndex: 100 }} />
-      <Stack gap={2} alignItems={'center'} justifyContent={'center'}>
+      <Stack gap={2} alignItems={'center'} justifyContent={'center'} pb={5}>
         <Stack gap={2} width={'100%'}>
           <Box>
             <LocationSearch
@@ -434,8 +433,6 @@ function CropCalendar() {
             </Stack>
           ) : null}
         </Stack>
-
-        <Stack>{prediction && prediction.length ? <Notes /> : null}</Stack>
       </Stack>
     </Container>
   )

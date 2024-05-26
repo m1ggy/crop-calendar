@@ -1,10 +1,23 @@
 import DeviceThermostatIcon from '@mui/icons-material/DeviceThermostat'
 import EventAvailableIcon from '@mui/icons-material/EventAvailable'
+import StickyNote2Icon from '@mui/icons-material/StickyNote2'
 import WaterDropIcon from '@mui/icons-material/WaterDrop'
-import { Button, Divider, Grid, Stack, Tooltip, Typography } from '@mui/joy'
+import {
+  Button,
+  Divider,
+  Grid,
+  Modal,
+  Stack,
+  Tooltip,
+  Typography,
+} from '@mui/joy'
 import moment from 'moment'
 import { useMemo, useState } from 'react'
+import { useShallow } from 'zustand/react/shallow'
+import useAppStore from '../store/app'
 import generateMonthArray from '../util/generateMonth'
+import NotesModal from './NotesModal'
+import ProcedureModal from './ProcedureModal'
 export type CalendarData = {
   date: string
   prediction: string
@@ -18,7 +31,12 @@ type CalendarProps = {
   data: CalendarData[]
 }
 function Calendar({ data }: CalendarProps) {
-  console.log({ data })
+  const { notes } = useAppStore(useShallow((state) => ({ notes: state.notes })))
+  const [openNotes, setOpenNotes] = useState(false)
+  const [noteDate, setNoteDate] = useState('')
+  const [openDescription, setOpenDescription] = useState(false)
+  const [description, setDescription] = useState('')
+  const [crop, setCrop] = useState('')
   const currentMonth = useMemo(() => moment().month(), [])
   const currentYear = useMemo(() => moment().year(), [])
   const [selectedMonth, setSelectedMonth] = useState<number>(currentMonth)
@@ -65,6 +83,11 @@ function Calendar({ data }: CalendarProps) {
         ))}
         {calendar.map((x, i) => {
           const match = data.find((v) => v.momentDate.isSame(x, 'day'))
+          const hasNotes = Boolean(
+            notes.find(
+              (z) => moment(z.date).format('MM-DD') === x?.format('MM-DD')
+            )
+          )
           return (
             <Grid
               key={i}
@@ -108,15 +131,30 @@ function Calendar({ data }: CalendarProps) {
                         >
                           {match.precipitation.toFixed(2)} cm
                         </Typography>
-                        <a
-                          href={`/crops?crop=${
-                            match.prediction.split(' ')[0]
-                          }&stage=${match.stage}`}
+                        <Button
+                          onClick={() => {
+                            setOpenNotes(true)
+                            setNoteDate(match.date)
+                          }}
                         >
-                          <Typography textColor={'common.black'}>
-                            See more details
+                          <Typography textColor={'common.white'}>
+                            View Notes
                           </Typography>
-                        </a>
+                        </Button>
+                        <Button
+                          disabled={
+                            match.stage == null || match.stage.length == 0
+                          }
+                          onClick={() => {
+                            setOpenDescription(true)
+                            setDescription(match.stage ?? '')
+                            setCrop(match.prediction)
+                          }}
+                        >
+                          <Typography textColor={'common.white'}>
+                            View Procedure
+                          </Typography>
+                        </Button>
                       </Stack>
                     </Stack>
                   ) : null
@@ -159,6 +197,10 @@ function Calendar({ data }: CalendarProps) {
                         ) : null}
                       </>
                     ) : null}
+
+                    {hasNotes ? (
+                      <StickyNote2Icon sx={{ color: '#FFEB3B' }} />
+                    ) : null}
                   </Stack>
                 </Stack>
               </Tooltip>
@@ -166,7 +208,22 @@ function Calendar({ data }: CalendarProps) {
           )
         })}
       </Grid>
-      ;
+      <Modal
+        open={openNotes}
+        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      >
+        <NotesModal date={noteDate} onClose={() => setOpenNotes(false)} />
+      </Modal>
+      <Modal
+        open={openDescription}
+        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      >
+        <ProcedureModal
+          title={description}
+          onClose={() => setOpenDescription(false)}
+          crop={crop}
+        />
+      </Modal>
     </Stack>
   )
 }
