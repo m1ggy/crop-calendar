@@ -7,7 +7,9 @@ import {
   FormControl,
   FormLabel,
   IconButton,
+  Sheet,
   Stack,
+  Table,
   Tooltip,
   Typography,
 } from '@mui/joy'
@@ -18,6 +20,53 @@ import Calendar, { CalendarData } from '../components/Calendar'
 import Header from '../components/Header'
 import LocationSearch from '../components/LocationSearch'
 import useAppStore from '../store/app'
+
+
+function getFirstAndLastByFlag(arr: CalendarData[], flag: boolean) {
+  if (!Array.isArray(arr)) {
+    throw new Error("Input must be a non-empty array");
+  }
+
+  let first = null;
+  let last = null;
+
+  if(arr.length === 0) return { first, last }
+  for (const obj of arr) {
+    if (obj?.isValid === flag) {
+      if (first === null) {
+        first = obj;
+      }
+      last = obj;
+    }
+  }
+
+  return { first, last };
+}
+
+function getStageStartAndEnd(arr: CalendarData[], flag: boolean) {
+  if (!Array.isArray(arr)) {
+    throw new Error("Input must be a non-empty array");
+  }
+
+  const result: Record<string, { first: CalendarData | null, last: CalendarData | null }> = {};
+
+  arr.forEach(obj => {
+    const stage = obj.stage;
+    if(!stage) return
+    if (!result[stage]) {
+      result[stage] = { first: null, last: null };
+    }
+
+    if (obj.isValid === flag) {
+      if (result[stage].first === null) {
+        result[stage].first = obj;
+      }
+      result[stage].last = obj;
+    }
+  });
+
+  return result;
+}
 
 const CROPS = [
   {
@@ -298,9 +347,16 @@ function CropCalendar() {
     return []
   }, [toDisplay, crop])
 
+  const { first, last } = useMemo(() => {
+    return getFirstAndLastByFlag(prediction ?? [], true)
+  }, [prediction])
+
+  const summaryDetails = useMemo(() => getStageStartAndEnd(prediction ?? [], true), [prediction])
+  const summaryKeys = useMemo(() => Object.keys(summaryDetails), [summaryDetails])
+  const summaryValues = useMemo(() => Object.values(summaryDetails), [summaryDetails])
   return (
     <Container maxWidth={'lg'}>
-      <Header sx={{ width: '100%', zIndex: 100 }} />
+      <Header sx={{ width: '100%', zIndex: 100, background: 'white' }} />
       <Stack gap={2} alignItems={'center'} justifyContent={'center'} pb={5}>
         <Stack gap={2} width={'100%'}>
           <Box>
@@ -417,6 +473,45 @@ function CropCalendar() {
                   </IconButton>
                 </Tooltip>
               </Stack>
+
+              {first && last? 
+                <>
+                <Typography textColor={'common.black'}>
+                  Based on the analysis the best span to grow <b>{crop?.label}</b> will be <b>{first?.momentDate.format('DD MMMM YYYY')}</b> to <b>{last?.momentDate?.format?.('DD MMMM YYYY')}</b>
+                  </Typography>
+                <br/>
+
+               {summaryKeys.length ?
+               <>
+               <b>Details</b>
+         
+               <Sheet>
+
+               <Table>
+                  <thead>
+                    <tr>
+                      <td style={{ fontWeight: 'bold' }}>Stage</td>
+                      <td style={{ fontWeight: 'bold' }}>Start Date</td>
+                      <td style={{ fontWeight: 'bold' }}>End Date</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+               {summaryKeys.map((k, ki) => (
+                
+                    <tr key={k}>
+                <td style={{ fontWeight: 'bold' }}>{k}</td>
+                <td>{summaryValues[ki]?.first?.momentDate?.format('DD MMMM YYYY')}</td>
+                <td>{summaryValues[ki]?.last?.momentDate?.format('DD MMMM YYYY')}</td>
+                </tr>
+               ))}
+                </tbody>
+                </Table>
+                </Sheet>
+               </>
+               : null} 
+
+                </>: null}
+
               <Typography textColor={'common.black'}>
                 The crop <b>{crop?.label}</b> has a precipitation requirement
                 of: <b>{crop?.details.precipitation.min} cm</b> to{' '}
@@ -428,8 +523,12 @@ function CropCalendar() {
                 <br />
                 This crop requires <b>{crop?.details.daysToHarvest}</b> days to
                 grow and be ready for harvest.
+                  <br/>
+                  <br/>
+                
               </Typography>
               <Calendar data={prediction} />
+             
             </Stack>
           ) : null}
         </Stack>

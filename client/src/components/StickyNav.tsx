@@ -17,20 +17,20 @@ function StickyNav() {
       position={'sticky'}
       top={0}
       px={5}
-      py={2}
-      bgcolor={'white'}
-    >
+      py={1}
+      sx={{ backgroundColor: 'rgba(250,250,250,0.2)' }}
+>
       <Button variant="plain" onClick={() => scrollIntoView('what')}>
-        <Typography textColor={'primary.400'}>What?</Typography>
+        <Typography textColor={'black'}>What?</Typography>
       </Button>
       <Button variant="plain" onClick={() => scrollIntoView('features')}>
-        <Typography textColor={'primary.400'}>Features</Typography>
+        <Typography textColor={'black'}>Features</Typography>
       </Button>
       <Button variant="plain" onClick={() => navigate('/crops')}>
-        <Typography textColor={'primary.400'}>Crops</Typography>
+        <Typography textColor={'black'}>Crops</Typography>
       </Button>
-      <Button onClick={() => scrollIntoView('generate')}>
-        <Typography>Generate</Typography>
+      <Button onClick={() => scrollIntoView('generate')} sx={{ backgroundColor: 'white' }}>
+        <Typography textColor={'black'}>Generate</Typography>
       </Button>
     </Box>
   )

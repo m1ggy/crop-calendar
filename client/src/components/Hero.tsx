@@ -10,7 +10,7 @@ function Hero() {
         height: "86vh",
       }}
       id="home"
-    >
+      >
       <Box
         display={"flex"}
         alignItems={"center"}
@@ -20,13 +20,13 @@ function Hero() {
         data-aos-duration="800"
         data-aos-easing="ease-in-out"
         data-aos-mirror="true"
-      >
+        >
         <Typography
           level="h1"
-          textColor={"primary.400"}
+          textColor={"white"}
           textAlign={"center"}
           fontSize={"90px"}
-        >
+          >
           Accurate Crop Calendars.
           <br />
           Anywhere.
