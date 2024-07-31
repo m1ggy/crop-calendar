@@ -2,7 +2,9 @@
 
 Rice (_Oryza sativa_) is a staple food for more than half of the world's population, particularly in Asia. It is a member of the grass family, Gramineae, and is cultivated for its edible seeds, which are commonly known as rice grains.
 
-![Rice Growing Stages](https://www.researchgate.net/profile/Kannan-Pandian/publication/267864397/figure/fig1/AS:614380823654414@1523491211679/Rice-crop-stages-Image-from-the-International-Rice-Research-Institute-IRRI-Rice.png)
+<div style="width:100%;display:flex;justify-content:center;">
+<img src="https://www.researchgate.net/profile/Kannan-Pandian/publication/267864397/figure/fig1/AS:614380823654414@1523491211679/Rice-crop-stages-Image-from-the-International-Rice-Research-Institute-IRRI-Rice.png" height="350px" />
+</div>
 
 # Procedures
 

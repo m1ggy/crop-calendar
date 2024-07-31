@@ -2,7 +2,9 @@
 
 Banana (_Musa spp._) is a tropical fruit beloved for its sweet taste and versatility. It belongs to the genus _Musa_ and is native to Southeast Asia. Bananas are a significant food source in many parts of the world and are consumed fresh or used in various culinary dishes.
 
-![Banana Growing Stages](https://www.researchgate.net/profile/Piet-Ja-Van-Asten/publication/267927304/figure/fig2/AS:614121871527950@1523429472699/Evolution-of-banana-mats-from-planted-suckers-to-mature-mats.png)
+<div style="width:100%;display:flex;justify-content:center;">
+<img src="https://www.researchgate.net/profile/Piet-Ja-Van-Asten/publication/267927304/figure/fig2/AS:614121871527950@1523429472699/Evolution-of-banana-mats-from-planted-suckers-to-mature-mats.png" height="350px" />
+</div>
 
 # Procedures
 

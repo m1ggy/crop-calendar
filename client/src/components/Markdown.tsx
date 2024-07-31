@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react'
 import ReactMarkdown from 'react-markdown'
+import rehyperaw from 'rehype-raw'
 import remarkGfm from 'remark-gfm'
 interface MarkdownProps {
   children?: string
@@ -23,6 +24,7 @@ function Markdown({ children }: MarkdownProps) {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
+      rehypePlugins={[rehyperaw]}
       components={{ h1: HeadingRenderer, h2: HeadingRenderer }}
     >
       {children}

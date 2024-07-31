@@ -2,7 +2,9 @@
 
 Corn, also known as maize (_Zea mays_), is a staple cereal grain grown worldwide. It is a member of the grass family, Gramineae, and is cultivated for its edible seeds, which are also called kernels or grains.
 
-![Corn Growing Stages](https://www.krugerseed.com/en-us/agronomy-library/corn-growth-stages-and-gdu-requirements/_jcr_content/root/responsivegrid/image.coreimg.jpeg/1686249205712/2020101202.jpeg)
+<div style="width:100%;display:flex;justify-content:center;">
+<img src="https://www.krugerseed.com/en-us/agronomy-library/corn-growth-stages-and-gdu-requirements/_jcr_content/root/responsivegrid/image.coreimg.jpeg/1686249205712/2020101202.jpeg" height="350px" />
+</div>
 
 # Procedures
 

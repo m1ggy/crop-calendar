@@ -1,35 +1,35 @@
-import DataObjectIcon from "@mui/icons-material/DataObject";
-import InsightsIcon from "@mui/icons-material/Insights";
-import LocalFloristIcon from "@mui/icons-material/LocalFlorist";
-import QueryStatsIcon from "@mui/icons-material/QueryStats";
-import { Grid, Stack, Typography } from "@mui/joy";
-import Section from "./Section";
+import DataObjectIcon from '@mui/icons-material/DataObject'
+import InsightsIcon from '@mui/icons-material/Insights'
+import LocalFloristIcon from '@mui/icons-material/LocalFlorist'
+import QueryStatsIcon from '@mui/icons-material/QueryStats'
+import { Grid, Stack, Typography } from '@mui/joy'
+import Section from './Section'
 function WhatSection() {
   return (
     <Section
       sx={{
-        display: "flex",
-        alignItems: "center",
+        display: 'flex',
+        alignItems: 'center',
         py: 5,
-        backgroundColor: "contrast.primary",
+        backgroundColor: 'contrast.primary',
       }}
       id="what"
     >
-      <Grid container mx={"20%"} p={2} columns={2}>
+      <Grid container mx={'20%'} p={2} columns={2}>
         <Grid
           lg={1}
-          sx={{ display: "flex", justifyContent: "center" }}
+          sx={{ display: 'flex', justifyContent: 'center' }}
           data-aos="fade-right"
           data-aos-duration="800"
         >
-          <LocalFloristIcon sx={{ width: "250px", height: "250px" }} />
+          <LocalFloristIcon sx={{ width: '250px', height: '250px' }} />
         </Grid>
         <Grid lg={1} data-aos="fade-left">
           <Stack p={2} gap={3}>
             <Typography
               level="h3"
-              fontWeight={"bold"}
-              textColor={"primary.400"}
+              fontWeight={'bold'}
+              textColor={'primary.400'}
             >
               About
             </Typography>
@@ -46,8 +46,8 @@ function WhatSection() {
           <Stack p={2} gap={3}>
             <Typography
               level="h3"
-              fontWeight={"bold"}
-              textColor={"primary.400"}
+              fontWeight={'bold'}
+              textColor={'primary.400'}
             >
               Improved Model
             </Typography>
@@ -62,24 +62,24 @@ function WhatSection() {
           lg={1}
           data-aos="fade-left"
           data-aos-duration="800"
-          sx={{ display: "flex", justifyContent: "center" }}
+          sx={{ display: 'flex', justifyContent: 'center' }}
         >
-          <InsightsIcon sx={{ width: "250px", height: "250px" }} />
+          <InsightsIcon sx={{ width: '250px', height: '250px' }} />
         </Grid>
         <Grid
           lg={1}
           data-aos="fade-left"
           data-aos-duration="800"
-          sx={{ display: "flex", justifyContent: "center" }}
+          sx={{ display: 'flex', justifyContent: 'center' }}
         >
-          <DataObjectIcon sx={{ width: "250px", height: "250px" }} />
+          <DataObjectIcon sx={{ width: '250px', height: '250px' }} />
         </Grid>
         <Grid lg={1} data-aos="fade-right">
           <Stack p={2} gap={3}>
             <Typography
               level="h3"
-              fontWeight={"bold"}
-              textColor={"primary.400"}
+              fontWeight={'bold'}
+              textColor={'primary.400'}
             >
               Enhanced Data
             </Typography>
@@ -93,8 +93,8 @@ function WhatSection() {
           <Stack p={2} gap={3}>
             <Typography
               level="h3"
-              fontWeight={"bold"}
-              textColor={"primary.400"}
+              fontWeight={'bold'}
+              textColor={'primary.400'}
             >
               Machine Learning and Statistical Techniques
             </Typography>
@@ -111,13 +111,13 @@ function WhatSection() {
           lg={1}
           data-aos="fade-right"
           data-aos-duration="800"
-          sx={{ display: "flex", justifyContent: "center" }}
+          sx={{ display: 'flex', justifyContent: 'center' }}
         >
-          <QueryStatsIcon sx={{ width: "250px", height: "250px" }} />
+          <QueryStatsIcon sx={{ width: '250px', height: '250px' }} />
         </Grid>
       </Grid>
     </Section>
-  );
+  )
 }
 
-export default WhatSection;
+export default WhatSection

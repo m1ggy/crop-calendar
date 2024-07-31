@@ -2,7 +2,9 @@
 
 The **carrot** (_[Daucus carota](https://en.wikipedia.org/wiki/Daucus_carota 'Daucus carota')_ subsp. _sativus_) is a [root vegetable](https://en.wikipedia.org/wiki/Root_vegetable 'Root vegetable'), typically orange in color. It originated in [Persia](https://en.wikipedia.org/wiki/Greater_Iran 'Greater Iran') and was cultivated for its taproot, stems, and leaves.
 
-![Carrots Growing Stages](https://www.gardeningaustin.com/uploads/2/7/1/7/27175817/carrots-3_orig.jpg)
+<div style="width:100%;display:flex;justify-content:center;">
+<img src="https://edis.ifas.ufl.edu/image/AE588/Daommp9azk/Iufyskt0pw/Iufyskt0pw-2048.webp" height="350px" />
+</div>
 
 # Procedures
 
@@ -49,8 +51,6 @@ The **carrot** (_[Daucus carota](https://en.wikipedia.org/wiki/Daucus_carota 'Da
 
 - **Timing:** Lift carrots when soil is moist to prevent breakage.
 - **Method:** Gently pull carrots from the soil, water to settle remaining roots.
-
-![How to grow carrots - harvesting carrots](https://images.immediate.co.uk/production/volatile/sites/10/2018/11/2048x1365-No-dig-gardening-LI2008772-9063a96.jpg?quality=90&fit=700,466)
 
 Sources:
 

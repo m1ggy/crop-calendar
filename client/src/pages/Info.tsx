@@ -55,7 +55,7 @@ function Info() {
   }, [entries])
   return (
     <>
-      <Header sx={{ width: '100%' }} />
+      <Header sx={{ width: '100%' }} isDetached />
       <Box
         sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
       >

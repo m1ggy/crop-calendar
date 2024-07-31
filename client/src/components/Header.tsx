@@ -5,8 +5,9 @@ import { useNavigate } from 'react-router-dom'
 
 type HeaderProps = {
   sx?: SxProps
+  isDetached?: boolean
 }
-function Header({ sx }: HeaderProps) {
+function Header({ sx, isDetached }: HeaderProps) {
   const navigate = useNavigate()
 
   const scrollIntoView = useCallback((id: string) => {
@@ -40,18 +41,36 @@ function Header({ sx }: HeaderProps) {
         </Typography>
       </Box>
       <Box>
-      <Button variant="plain" onClick={() => scrollIntoView('what')}>
-        <Typography textColor={'black'}>What?</Typography>
-      </Button>
-      <Button variant="plain" onClick={() => scrollIntoView('features')}>
-        <Typography textColor={'black'}>Features</Typography>
-      </Button>
-      <Button variant="plain" onClick={() => navigate('/crops')}>
-        <Typography textColor={'black'}>Crops</Typography>
-      </Button>
-      <Button onClick={() => scrollIntoView('generate')} sx={(theme) => ({ backgroundColor: theme.palette.primary[100] })}>
-        <Typography textColor={'black'}>Generate</Typography>
-      </Button>
+        <Button
+          variant="plain"
+          onClick={() =>
+            isDetached ? navigate('/#what') : scrollIntoView('what')
+          }
+        >
+          <Typography textColor={'black'}>What?</Typography>
+        </Button>
+        <Button
+          variant="plain"
+          onClick={() =>
+            isDetached ? navigate('/#features') : scrollIntoView('features')
+          }
+        >
+          <Typography textColor={'black'}>Features</Typography>
+        </Button>
+        <Button
+          variant="plain"
+          onClick={() => (isDetached ? navigate('/crops') : navigate('/crops'))}
+        >
+          <Typography textColor={'black'}>Crops</Typography>
+        </Button>
+        <Button
+          onClick={() =>
+            isDetached ? navigate('/#generate') : scrollIntoView('generate')
+          }
+          sx={(theme) => ({ backgroundColor: theme.palette.primary[100] })}
+        >
+          <Typography textColor={'black'}>Generate</Typography>
+        </Button>
       </Box>
     </Box>
   )
