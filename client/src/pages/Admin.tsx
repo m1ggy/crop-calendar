@@ -15,7 +15,7 @@ import { getUserCustomClaims, logOutUser } from '../auth/auth'
 import ManageCrops from './ManageCrops'
 
 function Admin() {
-  const [claims, setClaims] = useState<ParsedToken | null>(null)
+  const [claims, setClaims] = useState<ParsedToken | null | undefined>(null)
 
   useEffect(() => {
     getUserCustomClaims().then((c) => setClaims(c))

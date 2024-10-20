@@ -1,67 +1,67 @@
-import { Search } from "@mui/icons-material";
+import { Search } from '@mui/icons-material'
 import {
   Autocomplete,
   CircularProgress,
   FormControl,
   FormLabel,
-} from "@mui/joy";
-import { throttle } from "lodash-es";
-import { useCallback, useMemo, useState } from "react";
+} from '@mui/joy'
+import { throttle } from 'lodash-es'
+import { useCallback, useMemo, useState } from 'react'
 
 type LocationSearchProps = {
-  onChange: (value: google.maps.places.PlaceResult) => void;
-  disabled?: boolean;
-};
+  onChange: (value: google.maps.places.PlaceResult) => void
+  disabled?: boolean
+}
 
 function LocationSearch({ onChange, disabled }: LocationSearchProps) {
-  const [loading, setLoading] = useState(false);
-  const [searchKeyword, setSearchKeyword] = useState("");
-  const [intervalId, setIntervalId] = useState<number>(NaN);
+  const [loading, setLoading] = useState(false)
+  const [searchKeyword, setSearchKeyword] = useState('')
+  const [intervalId, setIntervalId] = useState<number>(NaN)
   const [result, setResult] = useState<
     { label: string; value: google.maps.places.QueryAutocompletePrediction }[]
-  >([]);
+  >([])
 
   const placeService = useMemo(() => {
     if (window.google) {
       const map = new google.maps.Map(
-        document.createElement("div") as HTMLElement
-      );
+        document.createElement('div') as HTMLElement
+      )
 
-      const service = new google.maps.places.PlacesService(map);
+      const service = new google.maps.places.PlacesService(map)
 
-      return service;
+      return service
     }
-  }, []);
+  }, [])
 
   const autocompleteService = useMemo(() => {
-    return new google.maps.places.AutocompleteService();
-  }, []);
+    return new google.maps.places.AutocompleteService()
+  }, [])
 
   const searchCallback = useCallback(
     (value: string) => {
-      setSearchKeyword(value);
-      setLoading(true);
+      setSearchKeyword(value)
+      setLoading(true)
       const timeoutId = setTimeout(() => {
         if (value.length)
           autocompleteService.getQueryPredictions(
             { input: value },
             (predictions) => {
-              setLoading(false);
+              setLoading(false)
               if (predictions)
                 setResult(
                   predictions.map((p) => ({
                     value: p,
                     label: p.description,
                   }))
-                );
+                )
             }
-          );
-      }, 1000);
+          )
+      }, 1000)
 
-      setIntervalId(timeoutId);
+      setIntervalId(timeoutId as unknown as number)
     },
     [autocompleteService]
-  );
+  )
 
   return (
     <FormControl>
@@ -71,12 +71,12 @@ function LocationSearch({ onChange, disabled }: LocationSearchProps) {
         slotProps={{
           root: {
             sx: {
-              width: "100%",
+              width: '100%',
             },
           },
         }}
         onInputChange={(_, value) => {
-          throttle(() => searchCallback(value), 500, { trailing: true })();
+          throttle(() => searchCallback(value), 500, { trailing: true })()
         }}
         onKeyDown={() => clearInterval(intervalId)}
         inputValue={searchKeyword}
@@ -88,21 +88,21 @@ function LocationSearch({ onChange, disabled }: LocationSearchProps) {
         }
         onChange={(_, value) => {
           if (onChange && value && value.value.place_id) {
-            setLoading(true);
+            setLoading(true)
             placeService?.getDetails(
               {
                 placeId: value.value.place_id,
               },
               (result) => {
-                setLoading(false);
-                if (result) onChange(result);
+                setLoading(false)
+                if (result) onChange(result)
               }
-            );
+            )
           }
         }}
       />
     </FormControl>
-  );
+  )
 }
 
-export default LocationSearch;
+export default LocationSearch
