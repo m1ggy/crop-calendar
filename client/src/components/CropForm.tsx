@@ -1,8 +1,9 @@
 import {
-  Autocomplete,
   Box,
   Button,
   Checkbox,
+  Option,
+  Select,
   Stack,
   Typography,
 } from '@mui/joy'
@@ -35,8 +36,8 @@ const schema = z.object({
       .required(),
     precipitation: z
       .object({
-        max: z.number().min(1),
-        min: z.number().min(1),
+        max: z.number(),
+        min: z.number(),
         scale: z.string().default('mm'),
       })
       .required(),
@@ -65,6 +66,7 @@ function CropForm({
   defaultValues = null,
   loading,
 }: CropFormProps) {
+  console.log({ onSubmit })
   const {
     handleSubmit,
     setValue,
@@ -84,10 +86,12 @@ function CropForm({
   const handleContentChange = (content: string) => {
     setValue('content', content) // Update the content field in React Hook Form
   }
+
+  const labelValue = watch('label')
   return (
     <Box
       component="form"
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(onSubmit, (err) => console.log({ err }))}
       sx={{
         display: 'flex',
         flexDirection: 'column',
@@ -115,15 +119,28 @@ function CropForm({
           Crop
         </Typography>
         <Stack>
-          <Autocomplete
-            value={{ label: getValues('label'), details: getValues('details') }}
+          <Select
             startDecorator={<YardOutlined />}
-            options={CROPS}
+            value={labelValue}
             onChange={(_, value) => {
-              setValue('label', value?.label as string)
-              setValue('details', value?.details as Details)
+              console.log({ value })
+              const selectedValue = value
+              const selectedCrop = CROPS.find(
+                (crop) => crop.label === selectedValue
+              )
+              console.log({ selectedCrop })
+              if (selectedCrop) {
+                setValue('label', selectedCrop.label as string)
+                setValue('details', selectedCrop.details as Details)
+              }
             }}
-          />
+          >
+            {CROPS.map((crop) => (
+              <Option key={crop.label} value={crop.label}>
+                {crop.label}
+              </Option>
+            ))}
+          </Select>
         </Stack>
       </Stack>
 

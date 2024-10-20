@@ -31,6 +31,7 @@ function ManageCrops({ municipality }: { municipality: string }) {
   }, [municipality, get])
 
   const onAdd = async (data: FormData) => {
+    console.log({ data })
     try {
       setLoading(true)
       await addCrop(data, municipality)
@@ -44,6 +45,8 @@ function ManageCrops({ municipality }: { municipality: string }) {
   }
 
   const onEdit = async (data: FormData) => {
+    console.log({ data })
+
     try {
       setLoading(true)
       await editCrop(defaultValues?.id as string, data, municipality)
