@@ -24,8 +24,11 @@ function Municipality() {
   const normal = crops.filter((crop) => !crop.featured)
   return (
     <Stack>
-      <Header isDetached />
-      <Stack sx={{ px: 10, gap: 2 }}>
+      <Header
+        isDetached
+        sx={{ backgroundColor: 'white', opacity: 1, zIndex: 1000 }}
+      />
+      <Stack sx={{ px: 10, gap: 2, pb: 10 }}>
         <Typography level="h1" textColor={'common.black'}>
           {params.municipality?.charAt(0).toLocaleUpperCase()}
           {params.municipality?.substring(1)}
@@ -79,9 +82,7 @@ function Municipality() {
                   <Typography level="title-lg" textColor={'common.black'}>
                     {crop.label}
                   </Typography>
-                  <Typography level="body-md" textColor={'common.black'}>
-                    {crop.content}
-                  </Typography>
+                  <Markdown>{crop.content}</Markdown>
                   <Typography level="title-md" textColor={'common.black'}>
                     Stages
                   </Typography>
@@ -90,6 +91,14 @@ function Municipality() {
                       {stage.name}: {stage.days} days
                     </Typography>
                   ))}
+
+                  <Button
+                    onClick={() =>
+                      navigate(`/crops?crop=${crop.label.toLowerCase()}`)
+                    }
+                  >
+                    View Crop Details
+                  </Button>
                 </Stack>
               </CardContent>
             </Card>
