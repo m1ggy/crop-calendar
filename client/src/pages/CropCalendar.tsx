@@ -244,7 +244,6 @@ function CropCalendar() {
       if (!location || !location.geometry || !location.geometry.location)
         throw Error('No Location selected')
       setProcessing(true)
-      console.log({ location })
       const lat =
         typeof location?.geometry?.location.lat === 'function'
           ? location?.geometry?.location.lat()
@@ -307,13 +306,7 @@ function CropCalendar() {
               const total = crop.details.stages
                 .slice(0, k + 1)
                 .reduce((prev, curr) => prev + curr.days, 0)
-              console.log(
-                'TOTAL STAGES: ',
-                total,
-                i + 1,
-                crop.details.stages.slice(0, k),
-                k
-              )
+
               if (total > i) {
                 currentStage = crop.details.stages[k]
                 break
@@ -343,7 +336,6 @@ function CropCalendar() {
           }
         }
       }
-      console.log({ mapped: mapped.filter((p) => p.isValid) })
       return mapped
     }
     return []
@@ -377,7 +369,6 @@ function CropCalendar() {
             <LocationSearch
               disabled={locationConfirmed}
               onChange={(value) => {
-                console.log('LOCATION: ', value)
                 setLocation(value)
                 setStoreLocation(value)
               }}

@@ -9,7 +9,7 @@ import {
 } from '@mui/joy'
 import { capitalize } from 'lodash-es'
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import Header from '../components/Header'
 import Markdown from '../components/Markdown'
 
@@ -19,7 +19,8 @@ function Info() {
   const container = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
   const [entries, setEntries] = useState<AccordionEntry[]>([])
-  const [searchParams] = useSearchParams()
+  const location = useLocation()
+  const [searchParams] = useSearchParams(location.search)
   const [forceExpand, setForceExpand] = useState<{
     crop: string
     stage: string
@@ -29,12 +30,11 @@ function Info() {
     const stage = searchParams.get('stage')
 
     if (cropType) setForceExpand({ crop: cropType, stage: stage || '' })
-  }, [searchParams, navigate])
+  }, [searchParams, navigate, location])
 
   useEffect(() => {
     if (forceExpand.stage) {
       const element = document.getElementById(forceExpand.stage.toLowerCase())
-      console.log({ element })
       element?.scroll({ behavior: 'smooth' })
     }
   }, [forceExpand])

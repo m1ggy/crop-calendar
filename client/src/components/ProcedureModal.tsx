@@ -14,8 +14,6 @@ interface ProcedureModalProps {
   crop: CROP_NAMES | string
 }
 function ProcedureModal({ onClose, title, crop }: ProcedureModalProps) {
-  console.log({ crop })
-
   const content = useMemo(() => {
     switch (crop) {
       case 'Banana (Musa spp.)': {

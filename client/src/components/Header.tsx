@@ -40,7 +40,7 @@ function Header({ sx, isDetached }: HeaderProps) {
           Smart Crop
         </Typography>
       </Box>
-      <Box>
+      <Box sx={{ display: 'flex', gap: 2 }}>
         <Button
           variant="plain"
           onClick={() =>
@@ -62,6 +62,12 @@ function Header({ sx, isDetached }: HeaderProps) {
           onClick={() => (isDetached ? navigate('/crops') : navigate('/crops'))}
         >
           <Typography textColor={'black'}>Crops</Typography>
+        </Button>
+        <Button variant="plain" onClick={() => navigate('/municipalities')}>
+          <Typography textColor={'black'}>Municipalities</Typography>
+        </Button>
+        <Button variant="plain" onClick={() => navigate('/login')}>
+          <Typography textColor={'black'}>Login</Typography>
         </Button>
         <Button
           onClick={() =>
