@@ -12,7 +12,7 @@ import { range } from "./util/range";
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(cors());
+app.use(cors({ origin: ["http://localhost:5173"] }));
 app.use(express.json());
 
 app.get("/api/health-check", (_, res) => {
@@ -24,7 +24,7 @@ app.use("/api/email", emailRouter);
 app.post<object, object, { crops: Crop[]; coords: Coords }>(
   "/api/predict",
   async (req, res) => {
-    console.log("PREDICT REQUEST: ", req.body);
+    console.log("PREDICT REQUEST: ", JSON.stringify(req.body, null, 2));
     try {
       if (!req.body.crops) throw new Error("No crops provided");
       if (!req.body.coords) throw new Error("No coords provided");
