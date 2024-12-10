@@ -93,7 +93,7 @@ class CropPredictionModel {
 
     // Decode predictions and return results
     return predictedValues.map((value, i) => ({
-      prediction: value[0] >= 0.5 ? this.crop.label : null, // Threshold at 0.5
+      prediction: value[0] >= 0.5 ? this.crop : null, // Threshold at 0.5
       temperature: weatherData[i].temperature,
       precipitation: weatherData[i].precipitation,
     }));
