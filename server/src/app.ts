@@ -3,7 +3,6 @@ import "dotenv/config";
 import express from "express";
 import { fetchWeatherApi } from "openmeteo";
 import CropPredictionModel, {
-  Coords,
   Crop,
 } from "./classes/CropPredictionModel";
 import emailRouter from "./routes/email";
@@ -21,7 +20,7 @@ app.get("/api/health-check", (_, res) => {
 
 app.use("/api/email", emailRouter);
 
-app.post<object, object, { crops: Crop[]; coords: Coords }>(
+app.post<object, object, { crops: Crop[]; coords: Record<string, string> }>(
   "/api/predict",
   async (req, res) => {
     console.log("PREDICT REQUEST: ", JSON.stringify(req.body, null, 2));
