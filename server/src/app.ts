@@ -11,7 +11,7 @@ import { range } from "./util/range";
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(cors({ origin: ["http://localhost:5173"] }));
+app.use(cors({ origin: ["http://localhost:5173", 'https://crop-calendar.netlify.app'] }));
 app.use(express.json());
 
 app.get("/api/health-check", (_, res) => {
