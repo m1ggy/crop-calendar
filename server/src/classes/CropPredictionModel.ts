@@ -19,6 +19,7 @@ export type Crop = {
 export type WeatherData = {
   temperature: number;
   precipitation: number;
+  date: string;
 };
 
 class CropPredictionModel {
@@ -96,6 +97,7 @@ class CropPredictionModel {
       prediction: value[0] >= 0.5 ? this.crop : null, // Threshold at 0.5
       temperature: weatherData[i].temperature,
       precipitation: weatherData[i].precipitation,
+      date: weatherData[i].date
     }));
   }
 }
