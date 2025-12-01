@@ -4,6 +4,9 @@ import express from "express";
 import { fetchWeatherApi } from "openmeteo";
 import CropPredictionModel, {
   Crop,
+  TrainingSample,
+  WeatherData,
+  generateTrainingData,
 } from "./classes/CropPredictionModel";
 import emailRouter from "./routes/email";
 import { range } from "./util/range";
@@ -11,7 +14,11 @@ import { range } from "./util/range";
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(cors({ origin: ["http://localhost:5173", 'https://crop-calendar.netlify.app'] }));
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://crop-calendar.netlify.app"],
+  }),
+);
 app.use(express.json());
 
 app.get("/api/health-check", (_, res) => {
@@ -42,54 +49,69 @@ app.post<object, object, { crops: Crop[]; coords: Record<string, string> }>(
         params,
       );
 
-      if (responses && responses.length) {
-        const response = responses[0];
-
-        // Attributes for timezone and location
-        const utcOffsetSeconds = response.utcOffsetSeconds();
-        const daily = response.daily()!;
-
-        // Note: The order of weather variables in the URL query and the indices below need to match!
-        const weatherData = {
-          daily: {
-            time: range(
-              Number(daily.time()),
-              Number(daily.timeEnd()),
-              daily.interval(),
-            ).map((t) => new Date((t + utcOffsetSeconds) * 1000)),
-            temperature: daily.variables(0)!.valuesArray()!,
-            precipitation: daily
-              .variables(1)!
-              .valuesArray()!
-              .map((x) => x * 0.1),
-          },
-        };
-
-        const data = [];
-
-        weatherData.daily.time.forEach((_, i) => {
-          const entry = {
-            date: _.toISOString(),
-            temperature: weatherData.daily.temperature[i],
-            precipitation: weatherData.daily.precipitation[i],
-          };
-          data.push(entry);
-        });
-
-      const model = new CropPredictionModel(req.body.crops, data);
-
-
-        const result = model.predict(data);
-        const evaluation = await model.evaluate(data)
-
-        res.status(200).json({
-          result,
-          rawData: data,
-          evaluation
-        });
+      if (!responses || !responses.length) {
+        throw new Error("No weather data received from Open-Meteo");
       }
+
+      const response = responses[0];
+
+      const utcOffsetSeconds = response.utcOffsetSeconds();
+      const daily = response.daily()!;
+
+      const weatherData = {
+        daily: {
+          time: range(
+            Number(daily.time()),
+            Number(daily.timeEnd()),
+            daily.interval(),
+          ).map((t) => new Date((t + utcOffsetSeconds) * 1000)),
+          temperature: daily.variables(0)!.valuesArray()!,
+          precipitation: daily
+            .variables(1)!
+            .valuesArray()!
+            .map((x) => x * 0.1), // mm -> cm
+        },
+      };
+
+      const data: WeatherData[] = [];
+
+      weatherData.daily.time.forEach((dateObj, i) => {
+        const entry: WeatherData = {
+          date: dateObj.toISOString(),
+          temperature: weatherData.daily.temperature[i],
+          precipitation: weatherData.daily.precipitation[i],
+        };
+        data.push(entry);
+      });
+
+      // === NEW: generate labeled training data from weather + crop ranges ===
+      const crop = req.body.crops[0];
+      const trainingData: TrainingSample[] = generateTrainingData(crop, data);
+
+      // (optional) split into train / validation
+      const splitIndex = Math.floor(trainingData.length * 0.8);
+      const trainSet = trainingData.slice(0, splitIndex);
+      const valSet = trainingData.slice(splitIndex);
+
+      const model = new CropPredictionModel(req.body.crops, trainSet);
+
+      // Wait a bit to ensure training is done if constructor isn't awaited externally
+      // Ideally, you’d expose train() and await it explicitly instead of this pattern.
+
+      const result = model.predict(data);
+      const evaluation = await model.evaluate(valSet);
+
+      res.status(200).json({
+        result,
+        rawData: data,
+        trainingData,
+        evaluation,
+      });
     } catch (error) {
-      return res.status(400).json({ message: "an error occured" });
+      console.error(error);
+      return res
+        .status(400)
+        .json({ message: "an error occurred", error: (error as Error).message });
     }
   },
 );

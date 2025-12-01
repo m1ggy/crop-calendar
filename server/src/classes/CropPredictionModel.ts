@@ -1,5 +1,4 @@
 import * as tf from "@tensorflow/tfjs";
-import { accuracy, mae, r2Score, rmse } from "../util/modelMeasurements";
 
 export type Crop = {
   details: {
@@ -23,12 +22,40 @@ export type WeatherData = {
   date: string;
 };
 
-export type TrainingSample = {
-  temperature: number;
-  precipitation: number;
-  label: 0 | 1;
+export type TrainingSample = WeatherData & {
+  label: 0 | 1; // 1 = viable to plant, 0 = not viable
 };
 
+/**
+ * Generate labeled training data from weather history by matching
+ * daily temperature & precipitation to the crop's ideal ranges.
+ */
+export function generateTrainingData(
+  crop: Crop,
+  weatherData: WeatherData[]
+): TrainingSample[] {
+  const {
+    temperature: tempRange,
+    precipitation: precipRange,
+  } = crop.details;
+
+  return weatherData.map((day) => {
+    const tempOk =
+      day.temperature >= tempRange.min &&
+      day.temperature <= tempRange.max;
+
+    const precipOk =
+      day.precipitation >= precipRange.min &&
+      day.precipitation <= precipRange.max;
+
+    const label: 0 | 1 = tempOk && precipOk ? 1 : 0;
+
+    return {
+      ...day,
+      label,
+    };
+  });
+}
 
 class CropPredictionModel {
   crop: Crop;
@@ -43,24 +70,19 @@ class CropPredictionModel {
 
     this.crop = crops[0];
 
+    // kick off training
     void this.train(trainingData);
   }
 
-
-  /**
-   * Simulates training with a placeholder TensorFlow model to retain compatibility.
-   */
- async train(trainingData: TrainingSample[]) {
+  async train(trainingData: TrainingSample[]) {
     if (!trainingData.length) {
       throw new Error("No training data provided.");
     }
 
-    // Features: [temperature, precipitation]
     const featureArray = trainingData.map((d) => [
       d.temperature,
       d.precipitation,
     ]);
-    // Labels: [0] or [1]
     const labelArray = trainingData.map((d) => [d.label]);
 
     const xs = tf.tensor2d(featureArray);
@@ -91,10 +113,7 @@ class CropPredictionModel {
     ys.dispose();
   }
 
-  /**
-   * Predict viability based on weather data using the trained TensorFlow model
-   */
-predict(weatherData: WeatherData[]) {
+  predict(weatherData: WeatherData[]) {
     if (!this.model) {
       throw new Error("Model has not been trained yet.");
     }
@@ -144,6 +163,49 @@ predict(weatherData: WeatherData[]) {
     const yTrue = labelArray;
     const yPredProb = predsArray2D.map((row) => row[0]);
 
+    // ---- metrics helpers ----
+    const r2Score = (yT: number[], yP: number[]) => {
+      const mean = yT.reduce((s, v) => s + v, 0) / yT.length;
+
+      let ssRes = 0;
+      let ssTot = 0;
+      for (let i = 0; i < yT.length; i++) {
+        const diff = yT[i] - yP[i];
+        ssRes += diff * diff;
+        const diffMean = yT[i] - mean;
+        ssTot += diffMean * diffMean;
+      }
+
+      if (ssTot === 0) return 0;
+      return 1 - ssRes / ssTot;
+    };
+
+    const rmse = (yT: number[], yP: number[]) => {
+      let sum = 0;
+      for (let i = 0; i < yT.length; i++) {
+        const diff = yT[i] - yP[i];
+        sum += diff * diff;
+      }
+      return Math.sqrt(sum / yT.length);
+    };
+
+    const mae = (yT: number[], yP: number[]) => {
+      let sum = 0;
+      for (let i = 0; i < yT.length; i++) {
+        sum += Math.abs(yT[i] - yP[i]);
+      }
+      return sum / yT.length;
+    };
+
+    const accuracy = (yT: number[], yP: number[], threshold = 0.5) => {
+      let correct = 0;
+      for (let i = 0; i < yT.length; i++) {
+        const predLabel = yP[i] >= threshold ? 1 : 0;
+        if (predLabel === yT[i]) correct++;
+      }
+      return correct / yT.length;
+    };
+
     const r2 = r2Score(yTrue, yPredProb);
     const rmseVal = rmse(yTrue, yPredProb);
     const maeVal = mae(yTrue, yPredProb);
@@ -151,7 +213,6 @@ predict(weatherData: WeatherData[]) {
 
     return { r2, rmse: rmseVal, mae: maeVal, accuracy: acc };
   }
-
 }
 
 export default CropPredictionModel;
