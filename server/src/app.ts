@@ -1,13 +1,16 @@
+// server.ts or index.ts
 import cors from "cors";
 import "dotenv/config";
 import express from "express";
 import { fetchWeatherApi } from "openmeteo";
+
 import CropPredictionModel, {
   Crop,
   TrainingSample,
   WeatherData,
   generateTrainingData,
 } from "./classes/CropPredictionModel";
+
 import emailRouter from "./routes/email";
 import { range } from "./util/range";
 
@@ -69,7 +72,7 @@ app.post<object, object, { crops: Crop[]; coords: Record<string, string> }>(
           precipitation: daily
             .variables(1)!
             .valuesArray()!
-            .map((x) => x * 0.1), // mm -> cm
+            .map((x) => x * 0.1), // convert mm → cm
         },
       };
 
@@ -84,34 +87,40 @@ app.post<object, object, { crops: Crop[]; coords: Record<string, string> }>(
         data.push(entry);
       });
 
-      // === NEW: generate labeled training data from weather + crop ranges ===
+      // === Generate labeled, normalized training data ===
       const crop = req.body.crops[0];
       const trainingData: TrainingSample[] = generateTrainingData(crop, data);
 
-      // (optional) split into train / validation
+      // (optional) inspect label distribution for debugging
+      const numOnes = trainingData.filter((d) => d.label === 1).length;
+      const numZeros = trainingData.length - numOnes;
+      console.log("Label counts:", { numZeros, numOnes });
+
+      // Simple train/validation split
       const splitIndex = Math.floor(trainingData.length * 0.8);
       const trainSet = trainingData.slice(0, splitIndex);
       const valSet = trainingData.slice(splitIndex);
 
-      const model = new CropPredictionModel(req.body.crops, trainSet);
+      const model = new CropPredictionModel(req.body.crops);
 
-      // Wait a bit to ensure training is done if constructor isn't awaited externally
-      // Ideally, you’d expose train() and await it explicitly instead of this pattern.
+      // 🔴 Important: explicitly wait for training
+      await model.train(trainSet);
 
       const result = model.predict(data);
       const evaluation = await model.evaluate(valSet);
 
       res.status(200).json({
         result,
-        rawData: data,
-        trainingData,
-        evaluation,
+        rawData: data,      // raw temperature & precipitation
+        trainingData,       // normalized + labels (for debugging/thesis)
+        evaluation,         // { r2, rmse, mae, accuracy }
       });
     } catch (error) {
       console.error(error);
-      return res
-        .status(400)
-        .json({ message: "an error occurred", error: (error as Error).message });
+      return res.status(400).json({
+        message: "an error occurred",
+        error: (error as Error).message,
+      });
     }
   },
 );

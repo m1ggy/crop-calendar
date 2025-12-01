@@ -1,4 +1,6 @@
-import * as tf from "@tensorflow/tfjs";
+// classes/CropPredictionModel.ts
+import * as tf from "@tensorflow/tfjs-node";
+// If you're in the browser, use "@tensorflow/tfjs" instead.
 
 export type Crop = {
   details: {
@@ -17,41 +19,60 @@ export type Crop = {
 };
 
 export type WeatherData = {
-  temperature: number;
-  precipitation: number;
+  temperature: number;   // raw °C
+  precipitation: number; // raw cm
   date: string;
 };
 
-export type TrainingSample = WeatherData & {
-  label: 0 | 1; // 1 = viable to plant, 0 = not viable
+export type TrainingSample = {
+  date: string;
+  temperature: number;   // normalized
+  precipitation: number; // normalized
+  label: 0 | 1;          // 1 = viable, 0 = not viable
 };
 
+// ---------- Normalization helpers ----------
+// Simple feature scaling. You can tune these if you want.
+const scaleTemp = (t: number) => t / 50;  // assume -10..40ish → ~0..1
+const scalePrecip = (p: number) => p / 20; // assume 0..20 cm/day → 0..1
+
 /**
- * Generate labeled training data from weather history by matching
- * daily temperature & precipitation to the crop's ideal ranges.
+ * Generate labeled, *normalized* training data from weather history
+ * by matching daily temperature & precipitation to the crop's ideal ranges.
  */
 export function generateTrainingData(
   crop: Crop,
   weatherData: WeatherData[]
 ): TrainingSample[] {
-  const {
-    temperature: tempRange,
-    precipitation: precipRange,
-  } = crop.details;
+  const tempRange = crop.details.temperature;
+  const precipRange = crop.details.precipitation;
+
+  // Pre-scale crop thresholds as well
+  const cropTempNorm = {
+    min: scaleTemp(tempRange.min),
+    max: scaleTemp(tempRange.max),
+  };
+
+  const cropPrecipNorm = {
+    min: scalePrecip(precipRange.min),
+    max: scalePrecip(precipRange.max),
+  };
 
   return weatherData.map((day) => {
-    const tempOk =
-      day.temperature >= tempRange.min &&
-      day.temperature <= tempRange.max;
+    const tempNorm = scaleTemp(day.temperature);
+    const precipNorm = scalePrecip(day.precipitation);
 
+    const tempOk =
+      tempNorm >= cropTempNorm.min && tempNorm <= cropTempNorm.max;
     const precipOk =
-      day.precipitation >= precipRange.min &&
-      day.precipitation <= precipRange.max;
+      precipNorm >= cropPrecipNorm.min && precipNorm <= cropPrecipNorm.max;
 
     const label: 0 | 1 = tempOk && precipOk ? 1 : 0;
 
     return {
-      ...day,
+      date: day.date,
+      temperature: tempNorm,
+      precipitation: precipNorm,
       label,
     };
   });
@@ -61,17 +82,13 @@ class CropPredictionModel {
   crop: Crop;
   model: tf.Sequential | null = null;
 
-  constructor(crops: Crop[], trainingData: TrainingSample[]) {
+  constructor(crops: Crop[]) {
     if (!Array.isArray(crops) || crops.length !== 1) {
       throw new Error(
         "CropPredictionModel requires exactly one crop in the input array.",
       );
     }
-
     this.crop = crops[0];
-
-    // kick off training
-    void this.train(trainingData);
   }
 
   async train(trainingData: TrainingSample[]) {
@@ -80,8 +97,8 @@ class CropPredictionModel {
     }
 
     const featureArray = trainingData.map((d) => [
-      d.temperature,
-      d.precipitation,
+      d.temperature,   // already normalized
+      d.precipitation, // already normalized
     ]);
     const labelArray = trainingData.map((d) => [d.label]);
 
@@ -113,17 +130,21 @@ class CropPredictionModel {
     ys.dispose();
   }
 
+  /**
+   * Predict viability for *raw* weather data.
+   * We normalize here before feeding to the model.
+   */
   predict(weatherData: WeatherData[]) {
     if (!this.model) {
       throw new Error("Model has not been trained yet.");
     }
 
     const features = weatherData.map((data) => [
-      data.temperature,
-      data.precipitation,
+      scaleTemp(data.temperature),
+      scalePrecip(data.precipitation),
     ]);
-    const xs = tf.tensor2d(features);
 
+    const xs = tf.tensor2d(features);
     const predictions = this.model.predict(xs) as tf.Tensor;
     const predictedValues = predictions.arraySync() as number[][];
 
@@ -135,16 +156,23 @@ class CropPredictionModel {
       return {
         probability: prob,
         prediction: prob >= 0.5 ? this.crop : null,
-        temperature: weatherData[i].temperature,
-        precipitation: weatherData[i].precipitation,
+        temperature: weatherData[i].temperature,       // raw
+        precipitation: weatherData[i].precipitation,   // raw
         date: weatherData[i].date,
       };
     });
   }
 
+  /**
+   * Evaluate on labeled, normalized data (TrainingSample[])
+   */
   async evaluate(validationData: TrainingSample[]) {
     if (!this.model) {
       throw new Error("Model has not been trained yet.");
+    }
+
+    if (!validationData.length) {
+      throw new Error("No validation data provided.");
     }
 
     const featureArray = validationData.map((d) => [
@@ -176,7 +204,7 @@ class CropPredictionModel {
         ssTot += diffMean * diffMean;
       }
 
-      if (ssTot === 0) return 0;
+      if (ssTot === 0) return 0; // no variance in labels
       return 1 - ssRes / ssTot;
     };
 
