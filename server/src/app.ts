@@ -78,10 +78,12 @@ app.post<object, object, { crops: Crop[]; coords: Record<string, string> }>(
         });
 
         const result = model.predict(data);
+        const evaluation = await model.evaluate(data)
 
         res.status(200).json({
           result,
           rawData: data,
+          evaluation
         });
       }
     } catch (error) {
