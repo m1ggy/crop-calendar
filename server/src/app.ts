@@ -27,7 +27,6 @@ app.post<object, object, { crops: Crop[]; coords: Record<string, string> }>(
     try {
       if (!req.body.crops) throw new Error("No crops provided");
       if (!req.body.coords) throw new Error("No coords provided");
-      const model = new CropPredictionModel(req.body.crops);
 
       const params = {
         latitude: `${req.body.coords.lat}`,
@@ -76,6 +75,9 @@ app.post<object, object, { crops: Crop[]; coords: Record<string, string> }>(
           };
           data.push(entry);
         });
+
+      const model = new CropPredictionModel(req.body.crops, data);
+
 
         const result = model.predict(data);
         const evaluation = await model.evaluate(data)
