@@ -329,6 +329,7 @@ function CropCalendar() {
             if (crop.details.stages.length) {
               const startingStage = crop.details.stages[0]
               newData.stage = startingStage.name
+              newData.prediction = crop.label as string
             }
             mapped.push(newData)
             isStartingPointFound = true

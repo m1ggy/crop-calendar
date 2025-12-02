@@ -20,7 +20,7 @@ import NotesModal from './NotesModal'
 import ProcedureModal from './ProcedureModal'
 export type CalendarData = {
   date: string
-  prediction: Record<string, string>
+  prediction: string
   temperature: number
   precipitation: number
   momentDate: moment.Moment
@@ -109,7 +109,7 @@ function Calendar({ data }: CalendarProps) {
                   match ? (
                     <Stack sx={{ color: 'black', p: 2, gap: 2 }}>
                       <Typography textColor={'common.black'}>
-                        {match?.prediction?.label}
+                        {match?.prediction}
                       </Typography>
                       <Divider />
                       <Stack gap={1}>
@@ -151,7 +151,7 @@ function Calendar({ data }: CalendarProps) {
                           onClick={() => {
                             setOpenDescription(true)
                             setDescription(match.stage ?? '')
-                            setCrop(match.prediction.label)
+                            setCrop(match.prediction)
                           }}
                         >
                           <Typography textColor={'common.white'}>
