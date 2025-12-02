@@ -12,11 +12,20 @@ export function r2Score(yTrue: number[], yPred: number[]): number {
     ssTot += diffMean * diffMean;
   }
 
-  // If labels have no variance (all 0 or all 1)
+  // If labels have no variance (e.g. all 0 or all 1),
+  // classic R² is undefined. We handle it specially.
   if (ssTot === 0) {
-    // If predictions are perfect (or extremely close), R² = 1
-    if (ssRes < 1e-8) return 1;
-    // Otherwise R² is undefined, return 0 for safety
+    // Mean squared error per sample
+    const mse = ssRes / yTrue.length;
+    const rmse = Math.sqrt(mse);
+
+    // If predictions are extremely close to the labels,
+    // treat it as "perfect" and return R² = 1.
+    if (rmse < 0.05) {
+      return 1;
+    }
+
+    // Otherwise, R² doesn't really make sense here, so return 0.
     return 0;
   }
 
