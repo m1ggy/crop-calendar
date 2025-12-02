@@ -41,6 +41,8 @@ function Calendar({ data }: CalendarProps) {
   const currentYear = useMemo(() => moment().year(), [])
   const [selectedMonth, setSelectedMonth] = useState<number>(currentMonth)
 
+  console.log({ crop })
+
   const calendar = useMemo(() => {
     return generateMonthArray(selectedMonth, currentYear)
   }, [selectedMonth, currentYear])
@@ -83,6 +85,7 @@ function Calendar({ data }: CalendarProps) {
         ))}
         {calendar.map((x, i) => {
           const match = data.find((v) => v.momentDate.isSame(x, 'day'))
+          console.log({ match })
           const hasNotes = Boolean(
             notes.find(
               (z) => moment(z.date).format('MM-DD') === x?.format('MM-DD')
