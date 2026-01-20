@@ -234,7 +234,7 @@ function CropCalendar() {
               .set('year', moment().year())
 
             return { ...x, momentDate: date }
-          })
+          }),
         )
       setPageDataHydrated(true)
     }
@@ -266,7 +266,7 @@ function CropCalendar() {
           headers: {
             'Content-Type': 'application/json',
           },
-        }
+        },
       )
       const jsonresponse = await response.json()
 
@@ -274,8 +274,6 @@ function CropCalendar() {
 
       if (jsonresponse.result && jsonresponse.result.length) {
         const parsed = jsonresponse.result.map((x: Record<string, string>) => {
-
-
           const date = moment(x.date)
             .tz('Asia/Manila')
             .set('year', moment().year())
@@ -292,56 +290,79 @@ function CropCalendar() {
   }, [crop, location, setStoreCalendarData])
 
   const prediction = useMemo(() => {
-    if (toDisplay && crop) {
-      let isStartingPointFound = false
-      let currentCount = 0
-      const mapped: CalendarData[] = []
-      for (let i = 0; i < toDisplay.length; i++) {
-        const currentDay = toDisplay[i]
+    if (!toDisplay?.length || !crop) return []
 
-        if (isStartingPointFound) {
-          if (currentCount < crop.details.daysToHarvest) {
-            const newData = { ...currentDay, isValid: true }
+    const tz = 'Asia/Manila'
+    const today = moment().tz(tz).startOf('day')
 
-            let currentStage: { name: string; days: number } | null = null
-            for (let k = 0; k < crop.details.stages.length; k++) {
-              const total = crop.details.stages
-                .slice(0, k + 1)
-                .reduce((prev, curr) => prev + curr.days, 0)
+    // Find the first index that is "today or later"
+    const startIndex = toDisplay.findIndex((d) => {
+      const md =
+        d.momentDate && moment.isMoment(d.momentDate)
+          ? d.momentDate
+          : moment(d.date).tz(tz)
+      return md.clone().startOf('day').isSameOrAfter(today)
+    })
 
-              if (total > i) {
-                currentStage = crop.details.stages[k]
-                break
-              }
-            }
-            if (currentStage) {
-              newData.stage = currentStage.name
-            } else {
-              newData.stage = 'Suitable'
-            }
-            mapped.push(newData)
-            currentCount += 1
-          } else mapped.push({ ...currentDay, isValid: false })
+    // If all data is before today, nothing to predict
+    if (startIndex === -1) {
+      return toDisplay.map((d) => ({ ...d, isValid: false }))
+    }
+
+    const mapped: CalendarData[] = []
+    let started = false
+    let dayIntoSeason = 0 // 0..daysToHarvest-1
+
+    // Mark days before today as invalid (optional but keeps calendar length consistent)
+    for (let i = 0; i < startIndex; i++) {
+      mapped.push({ ...toDisplay[i], isValid: false })
+    }
+
+    for (let i = startIndex; i < toDisplay.length; i++) {
+      const currentDay = toDisplay[i]
+
+      if (!started) {
+        // Only start checking from today onward
+        if (currentDay.temperature <= crop.details.temperature.max) {
+          const newData: CalendarData = { ...currentDay, isValid: true }
+          newData.prediction = crop.label as string
+          newData.stage = crop.details.stages?.[0]?.name ?? 'Suitable'
+
+          mapped.push(newData)
+          started = true
+          dayIntoSeason = 1
         } else {
-          if (currentDay.temperature <= crop.details.temperature.max) {
-            const newData = { ...currentDay, isValid: true }
+          mapped.push({ ...currentDay, isValid: false })
+        }
+        continue
+      }
 
-            if (crop.details.stages.length) {
-              const startingStage = crop.details.stages[0]
-              newData.stage = startingStage.name
-              newData.prediction = crop.label as string
-            }
-            mapped.push(newData)
-            isStartingPointFound = true
-            currentCount += 1
-          } else {
-            mapped.push({ ...currentDay, isValid: false })
+      // After start is found, fill up to daysToHarvest
+      if (dayIntoSeason < crop.details.daysToHarvest) {
+        const newData: CalendarData = { ...currentDay, isValid: true }
+
+        // Stage based on dayIntoSeason (not array index)
+        let currentStage: { name: string; days: number } | null = null
+        for (let k = 0; k < crop.details.stages.length; k++) {
+          const total = crop.details.stages
+            .slice(0, k + 1)
+            .reduce((prev, curr) => prev + curr.days, 0)
+
+          if (total > dayIntoSeason) {
+            currentStage = crop.details.stages[k]
+            break
           }
         }
+
+        newData.stage = currentStage ? currentStage.name : 'Suitable'
+        mapped.push(newData)
+        dayIntoSeason += 1
+      } else {
+        mapped.push({ ...currentDay, isValid: false })
       }
-      return mapped
     }
-    return []
+
+    return mapped
   }, [toDisplay, crop])
 
   const { first, last } = useMemo(() => {
@@ -350,15 +371,15 @@ function CropCalendar() {
 
   const summaryDetails = useMemo(
     () => getStageStartAndEnd(prediction ?? [], true),
-    [prediction]
+    [prediction],
   )
   const summaryKeys = useMemo(
     () => Object.keys(summaryDetails),
-    [summaryDetails]
+    [summaryDetails],
   )
   const summaryValues = useMemo(
     () => Object.values(summaryDetails),
-    [summaryDetails]
+    [summaryDetails],
   )
   return (
     <Container maxWidth={'lg'}>
@@ -511,12 +532,12 @@ function CropCalendar() {
                                 <td style={{ fontWeight: 'bold' }}>{k}</td>
                                 <td>
                                   {summaryValues[ki]?.first?.momentDate?.format(
-                                    'DD MMMM YYYY'
+                                    'DD MMMM YYYY',
                                   )}
                                 </td>
                                 <td>
                                   {summaryValues[ki]?.last?.momentDate?.format(
-                                    'DD MMMM YYYY'
+                                    'DD MMMM YYYY',
                                   )}
                                 </td>
                               </tr>
